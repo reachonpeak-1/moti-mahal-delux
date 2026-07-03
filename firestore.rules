@@ -1,0 +1,223 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==================== HELPER FUNCTIONS ====================
+
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if the authenticated user owns this document
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Check if the authenticated user has a profile document
+    function hasProfile() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    // Get the user's role from the users collection
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    // Check if user has a specific role
+    function hasRole(role) {
+      return isAuthenticated() && hasProfile() && getUserRole() == role;
+    }
+
+    // Check if user has any of the specified roles
+    function hasAnyRole(roles) {
+      return isAuthenticated() && hasProfile() && getUserRole() in roles;
+    }
+
+    // Check if user is an admin (superadmin or admin)
+    function isAdmin() {
+      return hasAnyRole(['superadmin', 'admin']);
+    }
+
+    // Check if user is staff or above
+    function isStaffOrAbove() {
+      return hasAnyRole(['superadmin', 'admin', 'staff']);
+    }
+
+    // Check if user is superadmin
+    function isSuperAdmin() {
+      return hasRole('superadmin');
+    }
+
+    // ==================== USERS COLLECTION ====================
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow read: if isAdmin();
+
+      // Users can update their own profile (but NOT their role or isActive)
+      allow update: if isOwner(userId) && 
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isActive']);
+
+      // Only superadmin can change roles and active status
+      allow update: if isSuperAdmin();
+
+      // Users can create their own profile on first login
+      allow create: if isOwner(userId) && 
+        request.resource.data.role == 'customer';
+
+      // Only superadmin can delete users
+      allow delete: if isSuperAdmin();
+
+      // Staff and above can list all users
+      allow list: if isStaffOrAbove();
+    }
+
+    // ==================== MENU ITEMS COLLECTION ====================
+    match /menuItems/{itemId} {
+      // Anyone can read menu items (public)
+      allow read: if true;
+
+      // Only admins can create, update, delete menu items
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ==================== CATEGORIES COLLECTION ====================
+    match /categories/{categoryId} {
+      // Anyone can read categories (public)
+      allow read: if true;
+
+      // Only admins can manage categories
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ==================== ORDERS COLLECTION ====================
+    match /orders/{orderId} {
+      // Customers can read their own orders
+      // Staff and above can read all orders
+      allow read: if (isAuthenticated() && resource.data.customerId == request.auth.uid) 
+                  || isStaffOrAbove();
+
+      // Authenticated users can create orders (with their own customerId)
+      allow create: if isAuthenticated() && 
+        request.resource.data.customerId == request.auth.uid;
+
+      // Staff and above can update order status
+      // Delivery boys can update delivery-specific fields
+      allow update: if isStaffOrAbove() || 
+        (hasRole('delivery') && 
+         request.resource.data.diff(resource.data).affectedKeys()
+           .hasOnly(['status', 'updatedAt']));
+
+      // Only admins can delete orders
+      allow delete: if isAdmin();
+
+      // Staff and above can list all orders
+      allow list: if isStaffOrAbove() || 
+        (isAuthenticated() && resource.data.customerId == request.auth.uid);
+    }
+
+    // ==================== RESERVATIONS COLLECTION ====================
+    match /reservations/{reservationId} {
+      // Customers can read their own reservations
+      // Staff and above can read all
+      allow read: if (isAuthenticated() && resource.data.customerId == request.auth.uid) 
+                  || isStaffOrAbove();
+
+      // Authenticated users can create reservations
+      allow create: if isAuthenticated();
+
+      // Staff and above can update reservation status
+      allow update: if isStaffOrAbove();
+
+      // Only admins can delete reservations
+      allow delete: if isAdmin();
+
+      // Staff and above can list all reservations
+      allow list: if isStaffOrAbove() || 
+        (isAuthenticated() && resource.data.customerId == request.auth.uid);
+    }
+
+    // ==================== COUPONS COLLECTION ====================
+    match /coupons/{couponId} {
+      // Authenticated users can read active coupons (for validation)
+      allow read: if isAuthenticated();
+
+      // Only admins can manage coupons
+      allow create, delete: if isAdmin();
+
+      // Admins can update anything; the coupon increment is done server-side
+      allow update: if isAdmin();
+
+      // Allow authenticated users to list (for coupon validation lookup)
+      allow list: if isAuthenticated();
+    }
+
+    // ==================== REVIEWS COLLECTION ====================
+    match /reviews/{reviewId} {
+      // Anyone can read approved reviews
+      allow read: if resource.data.status == 'approved' || isStaffOrAbove() ||
+                  (isAuthenticated() && resource.data.customerId == request.auth.uid);
+
+      // Authenticated users can create reviews (with their own customerId)
+      allow create: if isAuthenticated() && 
+        request.resource.data.customerId == request.auth.uid &&
+        request.resource.data.status == 'pending';
+
+      // Admins can moderate reviews (update status, add response)
+      allow update: if isAdmin();
+
+      // Admins can delete reviews
+      allow delete: if isAdmin();
+
+      // Public can list approved reviews; admins can list all
+      allow list: if true;
+    }
+
+    // ==================== SETTINGS COLLECTION ====================
+    match /settings/{settingId} {
+      // Anyone can read settings (for operating hours, hero slides, etc.)
+      allow read: if true;
+
+      // Only admins can update settings
+      allow update: if isAdmin();
+
+      // Only superadmin can create/delete settings
+      allow create, delete: if isSuperAdmin();
+    }
+
+    // ==================== FAVORITES COLLECTION ====================
+    match /favorites/{favoriteId} {
+      // Users can read/write their own favorites
+      allow read, write: if isAuthenticated() && 
+        resource.data.customerId == request.auth.uid;
+
+      allow create: if isAuthenticated() && 
+        request.resource.data.customerId == request.auth.uid;
+
+      allow delete: if isAuthenticated() && 
+        resource.data.customerId == request.auth.uid;
+
+      allow list: if isAuthenticated();
+    }
+
+    // ==================== SAVED ADDRESSES COLLECTION ====================
+    match /savedAddresses/{addressId} {
+      // Users can manage their own addresses
+      allow read: if isAuthenticated() && 
+        resource.data.customerId == request.auth.uid;
+
+      allow create: if isAuthenticated() && 
+        request.resource.data.customerId == request.auth.uid;
+
+      allow update, delete: if isAuthenticated() && 
+        resource.data.customerId == request.auth.uid;
+
+      allow list: if isAuthenticated();
+    }
+
+    // ==================== NOTIFICATIONS COLLECTION ====================
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

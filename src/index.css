@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Premium luxury theme colors */
+  --color-brand-bg-primary: #F7F4EE;
+  --color-brand-bg-secondary: #EFE8DD;
+  --color-brand-card: #FCFAF6;
+  --color-brand-surface: #FFFDF8;
+  --color-brand-text-primary: #2D2723;
+  --color-brand-text-secondary: #75695D;
+  --color-brand-text-muted: #988B80;
+  --color-brand-gold: #B68A44;
+  --color-brand-bronze: #A6763C;
+  --color-brand-success: #667B57;
+  --color-brand-divider: rgba(45, 39, 35, 0.08);
+  --color-brand-hover: #F2EBE0;
+}
+
+/* Custom styles for luxury editorial feel */
+body {
+  background-color: var(--color-brand-bg-primary);
+  color: var(--color-brand-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar matching aesthetics */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-brand-bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-text-muted);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-text-secondary);
+}
+
+/* Smooth circular reveal mask styles */
+.circle-mask {
+  clip-path: circle(0% at 50% 50%);
+  animation: circle-reveal 1.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+@keyframes circle-reveal {
+  0% {
+    clip-path: circle(0% at 50% 50%);
+  }
+  100% {
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+
+/* Masonry grid items transitions */
+.gallery-item {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   LUXURY CREAM & GOLD ADMIN PANEL THEME OVERRIDES
+   Maps Tailwind dark utility classes directly to warm brand variables.
+   ========================================================================== */
+.admin-theme {
+  --color-slate-950: var(--color-brand-surface);
+  --color-slate-900: var(--color-brand-bg-primary);
+  --color-slate-800: var(--color-brand-card);
+  --color-slate-700: var(--color-brand-bg-secondary);
+  --color-slate-600: var(--color-brand-text-muted);
+  --color-slate-500: var(--color-brand-text-secondary);
+  --color-slate-400: var(--color-brand-text-secondary);
+  --color-slate-300: var(--color-brand-text-primary);
+  --color-slate-200: var(--color-brand-text-primary);
+  --color-slate-100: var(--color-brand-text-primary);
+  
+  --color-zinc-950: var(--color-brand-surface);
+  --color-zinc-900: var(--color-brand-bg-primary);
+  --color-zinc-800: var(--color-brand-card);
+  --color-zinc-700: var(--color-brand-bg-secondary);
+  --color-zinc-600: var(--color-brand-text-muted);
+  --color-zinc-500: var(--color-brand-text-secondary);
+  
+  background-color: var(--color-brand-bg-primary);
+  color: var(--color-brand-text-primary);
+  font-family: var(--font-sans);
+}
+
+.admin-theme header,
+.admin-theme aside,
+.admin-theme main,
+.admin-theme div,
+.admin-theme section,
+.admin-theme table,
+.admin-theme th,
+.admin-theme td {
+  border-color: var(--color-brand-divider) !important;
+}
+
+.admin-theme .text-white,
+.admin-theme .text-slate-50,
+.admin-theme .text-slate-100,
+.admin-theme .text-slate-200,
+.admin-theme .text-slate-300 {
+  color: var(--color-brand-text-primary) !important;
+}
+
+.admin-theme .text-slate-400,
+.admin-theme .text-slate-500 {
+  color: var(--color-brand-text-secondary) !important;
+}
+
+/* Luxury Editorial Typography for Admin Panel */
+.admin-theme h1,
+.admin-theme h2,
+.admin-theme h3,
+.admin-theme .font-serif {
+  font-family: var(--font-serif) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.03em !important;
+  color: var(--color-brand-text-primary) !important;
+}
+
+/* Clean, elegant uppercase tracking for table headers */
+.admin-theme th {
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  font-size: 9px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.22em !important;
+  color: var(--color-brand-text-secondary) !important;
+  background-color: var(--color-brand-bg-secondary) !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+/* Table rows styling */
+.admin-theme tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.admin-theme tbody tr:hover {
+  background-color: var(--color-brand-hover) !important;
+}
+
+/* Sidebar navigation links */
+.admin-theme aside nav a {
+  font-family: var(--font-sans) !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.18em !important;
+  font-weight: 500 !important;
+}
+
+/* Luxury active state navigation overrides */
+.admin-theme .nav-active-link {
+  background: var(--color-brand-bg-secondary) !important;
+  color: var(--color-brand-gold) !important;
+  border-color: rgba(182, 138, 68, 0.15) !important;
+}
+
+/* Breadcrumb customization */
+.admin-theme .breadcrumb-active {
+  color: var(--color-brand-text-primary) !important;
+  font-weight: 500;
+}
+
+/* Forms input overrides in Admin */
+.admin-theme input,
+.admin-theme select,
+.admin-theme textarea {
+  background-color: var(--color-brand-surface) !important;
+  border-color: var(--color-brand-divider) !important;
+  color: var(--color-brand-text-primary) !important;
+}
+
+.admin-theme input:focus,
+.admin-theme select:focus,
+.admin-theme textarea:focus {
+  border-color: var(--color-brand-gold) !important;
+  outline: none;
+}
+
+.admin-theme span[class*="rounded-full"],
+.admin-theme select[class*="rounded-full"] {
+  border-radius: 2px !important; /* Sharp corners for luxury editorial feel */
+  border-width: 1px !important;
+  padding: 3px 10px !important;
+  font-size: 8px !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+}
+
+/* Received Status (Sky) -> Muted Grey-Charcoal */
+.admin-theme .text-sky-400,
+.admin-theme .text-sky-500 {
+  color: var(--color-brand-text-secondary) !important;
+}
+.admin-theme .bg-sky-500\/15 {
+  background-color: var(--color-brand-bg-secondary) !important;
+  border-color: var(--color-brand-divider) !important;
+}
+
+/* Confirmed Status & Delivery Type (Blue) -> Soft Gold/Amber */
+.admin-theme .text-blue-400,
+.admin-theme .text-blue-500 {
+  color: var(--color-brand-gold) !important;
+}
+.admin-theme .bg-blue-500\/15,
+.admin-theme .bg-blue-500\/20 {
+  background-color: rgba(182, 138, 68, 0.08) !important;
+  border-color: rgba(182, 138, 68, 0.25) !important;
+}
+
+/* Preparing Status & Takeaway Type (Amber) -> Bronze */
+.admin-theme .text-amber-400,
+.admin-theme .text-amber-500 {
+  color: var(--color-brand-bronze) !important;
+}
+.admin-theme .bg-amber-500\/15,
+.admin-theme .bg-amber-500\/20 {
+  background-color: rgba(166, 118, 60, 0.08) !important;
+  border-color: rgba(166, 118, 60, 0.25) !important;
+}
+
+/* Ready Status, Dine-In Type, & Paid Status (Emerald/Green) -> Forest Green */
+.admin-theme .text-emerald-400,
+.admin-theme .text-emerald-500,
+.admin-theme .text-green-400,
+.admin-theme .text-green-500 {
+  color: var(--color-brand-success) !important;
+}
+.admin-theme .bg-emerald-500\/15,
+.admin-theme .bg-emerald-500\/20,
+.admin-theme .bg-green-500\/15,
+.admin-theme .bg-green-500\/20 {
+  background-color: rgba(102, 123, 87, 0.08) !important;
+  border-color: rgba(102, 123, 87, 0.25) !important;
+}
+
+/* On the Way (Purple) -> Gold/Charcoal */
+.admin-theme .text-purple-400,
+.admin-theme .text-purple-500 {
+  color: var(--color-brand-gold) !important;
+}
+.admin-theme .bg-purple-500\/15 {
+  background-color: rgba(182, 138, 68, 0.08) !important;
+  border-color: rgba(182, 138, 68, 0.25) !important;
+}
+
+/* Cancelled & Failed Status (Rose) -> Muted Rose-Beige */
+.admin-theme .text-rose-400,
+.admin-theme .text-rose-500 {
+  color: #B56B6B !important;
+}
+.admin-theme .bg-rose-500\/15 {
+  background-color: rgba(181, 107, 107, 0.08) !important;
+  border-color: rgba(181, 107, 107, 0.25) !important;
+}
+
+/* COD & Out-of-Stock (Orange) -> Warm Bronze */
+.admin-theme .bg-orange-500\/15,
+.admin-theme .text-orange-400,
+.admin-theme .text-orange-500 {
+  background-color: rgba(166, 118, 60, 0.08) !important;
+  color: var(--color-brand-bronze) !important;
+  border-color: rgba(166, 118, 60, 0.25) !important;
+}
+
+

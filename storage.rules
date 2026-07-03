@@ -1,0 +1,56 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper: Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: Check file size (max 5MB)
+    function isValidSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // Helper: Check if file is an allowed image type
+    function isImage() {
+      return request.resource.contentType.matches('image/jpeg')
+          || request.resource.contentType.matches('image/png')
+          || request.resource.contentType.matches('image/webp')
+          || request.resource.contentType.matches('image/gif');
+    }
+
+    // Menu item images — public read, admin write
+    match /menu-images/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isImage() && isValidSize();
+    }
+
+    // Hero slider images — public read, admin write
+    match /hero-sliders/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isImage() && isValidSize();
+    }
+
+    // Gallery images — public read, admin write
+    match /gallery/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isImage() && isValidSize();
+    }
+
+    // Category images — public read, admin write
+    match /category-images/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isImage() && isValidSize();
+    }
+
+    // User avatars — public read, own user write
+    match /user-avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() 
+                   && request.auth.uid == userId 
+                   && isImage() 
+                   && isValidSize();
+    }
+  }
+}

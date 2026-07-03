@@ -1,0 +1,23 @@
+node_modules
+dist
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# Firebase
+.firebase/
+functions/node_modules/
+functions/lib/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+service-account.json
