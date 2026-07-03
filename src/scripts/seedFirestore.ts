@@ -12,19 +12,38 @@ const admin = require('firebase-admin');
 const { getFirestore } = require('firebase-admin/firestore');
 import * as fs from 'fs';
 import * as path from 'path';
+import dotenv from 'dotenv';
 import { MENU_ITEMS, CATEGORIES, HERO_SLIDES } from '../data';
 
-const serviceAccountPath = path.resolve(process.cwd(), 'service-account.json');
-if (!fs.existsSync(serviceAccountPath)) {
-  console.error('❌ Missing service-account.json in the project root.');
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+
+function getCredential() {
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+  const projectId = process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
+
+  if (clientEmail && privateKey && projectId) {
+    return admin.cert({
+      projectId,
+      clientEmail,
+      privateKey: privateKey.replace(/\\n/g, '\n'),
+    });
+  }
+
+  const serviceAccountPath = path.resolve(process.cwd(), 'service-account.json');
+  if (fs.existsSync(serviceAccountPath)) {
+    const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+    return admin.cert(serviceAccount);
+  }
+
+  console.error('❌ Missing Firebase Admin credentials in environment variables or service-account.json');
   process.exit(1);
 }
 
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-
-// Initialize Firebase Admin SDK
+// Initialize Admin SDK
 admin.initializeApp({
-  credential: admin.cert(serviceAccount),
+  credential: getCredential(),
 });
 
 const db = getFirestore();
