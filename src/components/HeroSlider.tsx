@@ -47,7 +47,7 @@ export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps)
     if (slides.length === 0) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    }, 4500);
     return () => clearInterval(timer);
   }, [slides]);
 
@@ -195,7 +195,7 @@ export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps)
           key={`progress-${currentIndex}`}
           initial={{ width: '0%' }}
           animate={{ width: '100%' }}
-          transition={{ duration: 6, ease: 'linear' }}
+          transition={{ duration: 4.5, ease: 'linear' }}
           className="h-full bg-brand-gold"
         />
       </div>
