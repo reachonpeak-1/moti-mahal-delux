@@ -6,16 +6,21 @@
 import { MenuItem } from './types';
 
 // Import our custom generated luxury food photos
-import butterChickenImg from './assets/butter_chicken.jpg';
-import dalMakhaniImg from './assets/dal_makhani.jpg';
-import malaiTikkaImg from './assets/malai_tikka.jpg';
+import butterChickenImg from './assets/butter_chicken.webp';
+import dalMakhaniImg from './assets/dal_makhani.webp';
+import malaiTikkaImg from './assets/malai_tikka.webp';
+import gkRegencyImg from './assets/gk_regency.webp';
+import motiMahal2Img from './assets/moti_mahal_2.webp';
+import regencyBanquetImg from './assets/regency_banquet.webp';
+import gkRegencyHotelImg from './assets/gk_regency_hotel.webp';
+import gkRegencyBuildingImg from './assets/gk_regency_building.webp';
 
 export const HERO_SLIDES = [
   {
     id: 'slide-1',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1200',
+    image: gkRegencyImg,
     headline: 'G.K. REGENCY COMPLEX',
-    subline: 'Bathinda’s premium hospitality landmark, featuring Moti Mahal Delux restaurant, Regency Banquets, and luxury boutique rooms.',
+    subline: 'Bathinda\'s premium hospitality landmark, featuring Moti Mahal Delux restaurant, Regency Banquets, and luxury boutique rooms.',
   },
   {
     id: 'slide-2',
@@ -25,15 +30,27 @@ export const HERO_SLIDES = [
   },
   {
     id: 'slide-3',
-    image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&q=80&w=1200',
+    image: regencyBanquetImg,
     headline: 'REGENCY BANQUET HALL',
     subline: 'Celebrate your grand events, weddings, corporate functions, and ring ceremonies in our luxury banquet halls.',
   },
   {
     id: 'slide-4',
-    image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=1200',
+    image: gkRegencyHotelImg,
     headline: 'GK REGENCY HOTEL STAYS BATHINDA',
     subline: 'Experience boutique luxury with our elegant hotel rooms, suite designs, premium amenities, and round-the-clock service.',
+  },
+  {
+    id: 'slide-5',
+    image: motiMahal2Img,
+    headline: 'LEGENDARY FINE DINING',
+    subline: 'Experience the signature hospitality and iconic recipes of Moti Mahal Delux, crafted for true connoisseurs of Indian cuisine.',
+  },
+  {
+    id: 'slide-6',
+    image: gkRegencyBuildingImg,
+    headline: 'HOTEL GK REGENCY & MOTI MAHAL DELUX',
+    subline: 'Your destination for world-class hospitality, fine dining, and grand celebrations — all under one roof in Bathinda.',
   },
 ];
 
