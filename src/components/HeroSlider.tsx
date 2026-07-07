@@ -214,6 +214,13 @@ export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps)
         ))}
       </div>
 
+      {/* Hidden preloader to cache all slide images in the browser */}
+      <div className="hidden" aria-hidden="true" style={{ width: 0, height: 0, overflow: 'hidden', position: 'absolute' }}>
+        {slides.map((slide) => (
+          <img key={slide.id} src={slide.image} alt="" />
+        ))}
+      </div>
+
     </section>
   );
 }
