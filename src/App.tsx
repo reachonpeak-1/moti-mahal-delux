@@ -5,20 +5,12 @@
  * and user favorites, and handles shopping cart operations.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Sparkles,
-  UtensilsCrossed,
-  Clock,
   Instagram,
   MapPin,
-  Compass,
-  ArrowRight,
-  Flame,
-  Star,
-  BookOpen,
   Phone,
   Home,
   Menu as MenuIcon,
@@ -27,7 +19,6 @@ import {
 } from 'lucide-react';
 
 import { MenuItem, CartItem, Order, Category, Favorite } from './types';
-import { HERO_SLIDES, GALLERY_PHOTOS } from './data';
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -36,38 +27,11 @@ import Lenis from 'lenis';
 gsap.registerPlugin(ScrollTrigger);
 
 // Core Components
-import LoadingScreen from './components/LoadingScreen';
 import Header from './components/Header';
-import ProductDrawer from './components/ProductDrawer';
-import CartDrawer from './components/CartDrawer';
-import CheckoutModal from './components/CheckoutModal';
-import OrderTracker from './components/OrderTracker';
 
 // Views
 import HomeView from './views/HomeView';
-import MenuView from './views/MenuView';
-import StoryView from './views/StoryView';
-import ReservationView from './views/ReservationView';
-import TrackOrderView from './views/TrackOrderView';
-
-// Auth & Admin Components
-import LoginPage from './components/auth/LoginPage';
-import SignupPage from './components/auth/SignupPage';
-import AdminLoginPage from './components/auth/AdminLoginPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import ProfilePage from './components/customer/ProfilePage';
-
-// Admin Pages
-import AdminLayout from './admin/AdminLayout';
-import AdminDashboard from './admin/AdminDashboard';
-import OrdersManager from './admin/OrdersManager';
-import MenuManager from './admin/MenuManager';
-import CategoryManager from './admin/CategoryManager';
-import ReservationsManager from './admin/ReservationsManager';
-import CouponsManager from './admin/CouponsManager';
-import ReviewsManager from './admin/ReviewsManager';
-import UsersManager from './admin/UsersManager';
-import SettingsManager from './admin/SettingsManager';
 
 // Services & Auth Context
 import { useAuth } from './contexts/AuthContext';
@@ -75,14 +39,38 @@ import { getMenuItems } from './services/menuService';
 import { getCategories } from './services/categoryService';
 import { getFavorites, toggleFavorite } from './services/favoriteService';
 import { isFirebaseConfigured } from './firebase';
-import { MENU_ITEMS as STATIC_MENU_ITEMS, CATEGORIES as STATIC_CATEGORIES } from './data';
 import toast from 'react-hot-toast';
 import { useSettings } from './contexts/SettingsContext';
+
+const ProductDrawer = lazy(() => import('./components/ProductDrawer'));
+const CartDrawer = lazy(() => import('./components/CartDrawer'));
+const CheckoutModal = lazy(() => import('./components/CheckoutModal'));
+const OrderTracker = lazy(() => import('./components/OrderTracker'));
+
+const MenuView = lazy(() => import('./views/MenuView'));
+const StoryView = lazy(() => import('./views/StoryView'));
+const ReservationView = lazy(() => import('./views/ReservationView'));
+const TrackOrderView = lazy(() => import('./views/TrackOrderView'));
+
+const LoginPage = lazy(() => import('./components/auth/LoginPage'));
+const SignupPage = lazy(() => import('./components/auth/SignupPage'));
+const AdminLoginPage = lazy(() => import('./components/auth/AdminLoginPage'));
+const ProfilePage = lazy(() => import('./components/customer/ProfilePage'));
+
+const AdminLayout = lazy(() => import('./admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./admin/AdminDashboard'));
+const OrdersManager = lazy(() => import('./admin/OrdersManager'));
+const MenuManager = lazy(() => import('./admin/MenuManager'));
+const CategoryManager = lazy(() => import('./admin/CategoryManager'));
+const ReservationsManager = lazy(() => import('./admin/ReservationsManager'));
+const CouponsManager = lazy(() => import('./admin/CouponsManager'));
+const ReviewsManager = lazy(() => import('./admin/ReviewsManager'));
+const UsersManager = lazy(() => import('./admin/UsersManager'));
+const SettingsManager = lazy(() => import('./admin/SettingsManager'));
 
 export default function App() {
   const { user } = useAuth();
   const { settings } = useSettings();
-  const [isLoading, setIsLoading] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const location = useLocation();
@@ -110,8 +98,16 @@ export default function App() {
   // 1. Fetch Categories and Menu Items dynamically from Firestore
   useEffect(() => {
     if (!isFirebaseConfigured) {
-      setMenuItems(STATIC_MENU_ITEMS);
-      setCategories(STATIC_CATEGORIES);
+      import('./data').then(({ MENU_ITEMS, CATEGORIES }) => {
+        setMenuItems(MENU_ITEMS);
+        setCategories(
+          CATEGORIES.map((category, index) => ({
+            ...category,
+            sortOrder: index,
+            isActive: true,
+          }))
+        );
+      });
       return;
     }
 
@@ -194,8 +190,6 @@ export default function App() {
 
   // Lenis & scroll sync loop
   useEffect(() => {
-    if (isLoading) return;
-
     // Disable smooth scroll on admin routes for better performance
     if (location.pathname.startsWith('/admin')) return;
 
@@ -233,12 +227,10 @@ export default function App() {
       gsap.ticker.remove(gsapTicker);
       lenisRef.current = null;
     };
-  }, [isLoading, location.pathname]);
+  }, [location.pathname]);
 
   // Handle route change animations and scroll resets
   useEffect(() => {
-    if (isLoading) return;
-
     // Reset scroll positions
     if (lenisRef.current) {
       lenisRef.current.scrollTo(0, { immediate: true });
@@ -266,7 +258,7 @@ export default function App() {
         }
       );
     }
-  }, [location.pathname, isLoading]);
+  }, [location.pathname]);
 
   // Cart operations
   const triggerCartPulseAndSlide = () => {
@@ -453,11 +445,6 @@ export default function App() {
 
   return (
     <div id="moti-mahal-app-root" className="min-h-screen bg-brand-bg-primary text-brand-text-primary selection:bg-brand-gold selection:text-brand-surface font-sans antialiased">
-      
-      {/* Cinematic Loading Screen */}
-      {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
-
-      {!isLoading && (
         <div id="luxury-dining-stage" className="relative pb-16 md:pb-0">
           
           {/* Scroll progress bar top overlay */}
@@ -482,83 +469,85 @@ export default function App() {
           {/* Main Content Router Stage */}
           <div className={isAdminRoute ? '' : 'min-h-[70vh]'}>
             <AnimatePresence mode="wait">
-              <Routes location={location}>
-                {/* Public Customer Routes */}
-                <Route
-                  path="/"
-                  element={
-                    <HomeView
-                      bestSellers={bestSellers}
-                      onSelectItem={setSelectedItem}
-                      onAddToCart={handleAddToCart}
-                    />
-                  }
-                />
-                <Route
-                  path="/menu"
-                  element={
-                    <MenuView
-                      activeCategory={activeCategory}
-                      setActiveCategory={setActiveCategory}
-                      searchQuery={searchQuery}
-                      setSearchQuery={setSearchQuery}
-                      filteredMenuItems={filteredMenuItems}
-                      chefSpecials={chefSpecials}
-                      onSelectItem={setSelectedItem}
-                      onAddToCart={handleAddToCart}
-                      categories={categories}
-                    />
-                  }
-                />
-                <Route path="/story" element={<StoryView />} />
-                <Route path="/reservation" element={<ReservationView />} />
-                <Route
-                  path="/track"
-                  element={<TrackOrderView activeOrder={activeOrder} />}
-                />
-
-                {/* Authentication Routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/admin/login" element={<AdminLoginPage />} />
-
-                {/* Customer Protected Profiles */}
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute allowedRoles={['customer', 'superadmin', 'admin', 'staff', 'delivery']}>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* Admin Control Panel Shell & Nested Management Layouts */}
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin', 'admin', 'staff']}>
-                      <AdminLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="orders" element={<OrdersManager />} />
-                  <Route path="menu" element={<MenuManager />} />
-                  <Route path="categories" element={<CategoryManager />} />
-                  <Route path="reservations" element={<ReservationsManager />} />
-                  <Route path="coupons" element={<CouponsManager />} />
-                  <Route path="reviews" element={<ReviewsManager />} />
+              <Suspense fallback={null}>
+                <Routes location={location}>
+                  {/* Public Customer Routes */}
                   <Route
-                    path="users"
+                    path="/"
                     element={
-                      <ProtectedRoute allowedRoles={['superadmin']}>
-                        <UsersManager />
+                      <HomeView
+                        bestSellers={bestSellers}
+                        onSelectItem={setSelectedItem}
+                        onAddToCart={handleAddToCart}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/menu"
+                    element={
+                      <MenuView
+                        activeCategory={activeCategory}
+                        setActiveCategory={setActiveCategory}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        filteredMenuItems={filteredMenuItems}
+                        chefSpecials={chefSpecials}
+                        onSelectItem={setSelectedItem}
+                        onAddToCart={handleAddToCart}
+                        categories={categories}
+                      />
+                    }
+                  />
+                  <Route path="/story" element={<StoryView />} />
+                  <Route path="/reservation" element={<ReservationView />} />
+                  <Route
+                    path="/track"
+                    element={<TrackOrderView activeOrder={activeOrder} />}
+                  />
+
+                  {/* Authentication Routes */}
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/admin/login" element={<AdminLoginPage />} />
+
+                  {/* Customer Protected Profiles */}
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute allowedRoles={['customer', 'superadmin', 'admin', 'staff', 'delivery']}>
+                        <ProfilePage />
                       </ProtectedRoute>
                     }
                   />
-                  <Route path="settings" element={<SettingsManager />} />
-                </Route>
-              </Routes>
+
+                  {/* Admin Control Panel Shell & Nested Management Layouts */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin', 'admin', 'staff']}>
+                        <AdminLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="orders" element={<OrdersManager />} />
+                    <Route path="menu" element={<MenuManager />} />
+                    <Route path="categories" element={<CategoryManager />} />
+                    <Route path="reservations" element={<ReservationsManager />} />
+                    <Route path="coupons" element={<CouponsManager />} />
+                    <Route path="reviews" element={<ReviewsManager />} />
+                    <Route
+                      path="users"
+                      element={
+                        <ProtectedRoute allowedRoles={['superadmin']}>
+                          <UsersManager />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="settings" element={<SettingsManager />} />
+                  </Route>
+                </Routes>
+              </Suspense>
             </AnimatePresence>
           </div>
 
@@ -710,39 +699,55 @@ export default function App() {
           )}
 
           {/* DETAILED PRODUCT PROFILE DRAWER */}
-          <ProductDrawer
-            item={selectedItem}
-            onClose={() => setSelectedItem(null)}
-            onAddToCartWithCustom={handleAddToCartWithCustom}
-          />
+          {selectedItem && (
+            <Suspense fallback={null}>
+              <ProductDrawer
+                item={selectedItem}
+                onClose={() => setSelectedItem(null)}
+                onAddToCartWithCustom={handleAddToCartWithCustom}
+              />
+            </Suspense>
+          )}
 
           {/* PRESTIGIOUS ITEM LISTING CART DRAWER */}
-          <CartDrawer
-            isOpen={isCartOpen}
-            onClose={() => setIsCartOpen(false)}
-            cartItems={cartItems}
-            onUpdateQuantity={handleUpdateCartQuantity}
-            onRemoveItem={handleRemoveCartItem}
-            onCheckout={() => {
-              setIsCartOpen(false);
-              setIsCheckoutOpen(true);
-            }}
-            onQuickAdd={(item) => handleAddToCart(item)}
-          />
+          {isCartOpen && (
+            <Suspense fallback={null}>
+              <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+                cartItems={cartItems}
+                onUpdateQuantity={handleUpdateCartQuantity}
+                onRemoveItem={handleRemoveCartItem}
+                onCheckout={() => {
+                  setIsCartOpen(false);
+                  setIsCheckoutOpen(true);
+                }}
+                onQuickAdd={(item) => handleAddToCart(item)}
+              />
+            </Suspense>
+          )}
 
           {/* RAZORPAY & STRIPE-READY CHECKOUT GATEWAY MODAL */}
-          <CheckoutModal
-            isOpen={isCheckoutOpen}
-            onClose={() => setIsCheckoutOpen(false)}
-            cartItems={cartItems}
-            onOrderPlaced={handleOrderPlaced}
-          />
+          {isCheckoutOpen && (
+            <Suspense fallback={null}>
+              <CheckoutModal
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                cartItems={cartItems}
+                onOrderPlaced={handleOrderPlaced}
+              />
+            </Suspense>
+          )}
 
           {/* ACTIVE IMPERIAL ORDER TRACKER (Interactive dispatch notifier) */}
-          <OrderTracker
-            activeOrder={activeOrder}
-            onClose={() => setActiveOrder(null)}
-          />
+          {activeOrder && (
+            <Suspense fallback={null}>
+              <OrderTracker
+                activeOrder={activeOrder}
+                onClose={() => setActiveOrder(null)}
+              />
+            </Suspense>
+          )}
 
           {/* Floating WhatsApp Widget */}
           {!isAdminRoute && (
@@ -772,8 +777,6 @@ export default function App() {
           )}
 
         </div>
-      )}
-
     </div>
   );
 }

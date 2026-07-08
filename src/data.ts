@@ -14,8 +14,9 @@ import motiMahal2Img from './assets/moti_mahal_2.webp';
 import regencyBanquetImg from './assets/regency_banquet.webp';
 import gkRegencyHotelImg from './assets/gk_regency_hotel.webp';
 import gkRegencyBuildingImg from './assets/gk_regency_building.webp';
+export { HERO_SLIDES } from './heroSlides';
 
-export const HERO_SLIDES = [
+const LEGACY_HERO_SLIDES = [
   {
     id: 'slide-1',
     image: gkRegencyImg,

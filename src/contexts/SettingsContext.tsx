@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getSettings } from '../services/settingsService';
 import type { RestaurantSettings } from '../types';
+import { isFirebaseConfigured } from '../firebase';
 
 interface SettingsContextType {
   settings: RestaurantSettings | null;
@@ -14,6 +15,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isFirebaseConfigured) {
+      setSettings(null);
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = getSettings((data) => {
       setSettings(data);
       setLoading(false);

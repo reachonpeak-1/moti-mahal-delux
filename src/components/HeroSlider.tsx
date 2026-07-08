@@ -4,12 +4,12 @@
  * Falls back to static HERO_SLIDES if settings are not loaded yet or empty.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { HERO_SLIDES as STATIC_SLIDES } from '../data';
-import { getSettings } from '../services/settingsService';
+import { HERO_SLIDES as STATIC_SLIDES } from '../heroSlides';
 import type { HeroSlide } from '../types';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface HeroSliderProps {
   onOrderNow: () => void;
@@ -17,30 +17,28 @@ interface HeroSliderProps {
 }
 
 export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps) {
-  const [slides, setSlides] = useState<HeroSlide[]>([]);
+  const staticSlides = useMemo(
+    () =>
+      STATIC_SLIDES.map((slide, idx) => ({
+        id: slide.id,
+        image: slide.image,
+        headline: slide.headline,
+        subline: slide.subline,
+        sortOrder: idx,
+      })),
+    []
+  );
+  const { settings } = useSettings();
+  const [slides, setSlides] = useState<HeroSlide[]>(staticSlides);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Load slides from settings
+  // Update slides when restaurant settings arrive, but keep static slides visible on first paint.
   useEffect(() => {
-    const unsub = getSettings((data) => {
-      if (data && data.heroSliders && data.heroSliders.length > 0) {
-        // Sort slides by sortOrder
-        const sorted = [...data.heroSliders].sort((a, b) => a.sortOrder - b.sortOrder);
-        setSlides(sorted);
-      } else {
-        // Fallback to static slides mapped to HeroSlide format
-        const mapped = STATIC_SLIDES.map((s, idx) => ({
-          id: s.id,
-          image: s.image,
-          headline: s.headline,
-          subline: s.subline,
-          sortOrder: idx,
-        }));
-        setSlides(mapped);
-      }
-    });
-    return () => unsub();
-  }, []);
+    if (settings?.heroSliders?.length) {
+      setSlides([...settings.heroSliders].sort((a, b) => a.sortOrder - b.sortOrder));
+      setCurrentIndex(0);
+    }
+  }, [settings]);
 
   // Autoplay rotation
   useEffect(() => {
@@ -88,11 +86,13 @@ export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps)
             className="absolute inset-0"
           >
             {/* Ambient image background */}
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-[6000ms] ease-out scale-105"
-              style={{
-                backgroundImage: `url(${activeSlide.image})`,
-              }}
+            <img
+              src={activeSlide.image}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-[6000ms] ease-out scale-105"
+              loading={currentIndex === 0 ? 'eager' : 'lazy'}
+              fetchPriority={currentIndex === 0 ? 'high' : 'auto'}
+              decoding="async"
             />
             {/* Dark vignette overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-brand-text-primary/95 via-brand-text-primary/45 to-brand-text-primary/30" />
@@ -216,7 +216,7 @@ export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps)
 
       {/* Hidden preloader to cache all slide images in the browser */}
       <div className="hidden" aria-hidden="true" style={{ width: 0, height: 0, overflow: 'hidden', position: 'absolute' }}>
-        {slides.map((slide) => (
+        {slides.slice(1).map((slide) => (
           <img key={slide.id} src={slide.image} alt="" />
         ))}
       </div>
