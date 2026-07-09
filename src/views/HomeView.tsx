@@ -162,7 +162,7 @@ export default function HomeView({ bestSellers, onSelectItem, onAddToCart }: Hom
                   <span className="font-sans text-[8px] tracking-[0.3em] text-brand-gold uppercase font-bold block">BOUTIQUE ROOMS & SUITES</span>
                   <h3 className="font-serif text-xl text-brand-text-primary">GK Regency Hotel Stays</h3>
                   <p className="font-sans text-xs text-brand-text-secondary leading-relaxed">
-                    Luxurious accommodations featuring state-of-the-art designer suites, high-speed Wi-Fi, and 24/7 dedicated guest room services.
+                    Luxurious accommodations featuring state-of-the-art designer suites, high-speed Wi-Fi, and 24/7 dedicated services. For room booking queries, contact our front desk directly as online reservations are not available.
                   </p>
                 </div>
                 <div className="pt-2">
@@ -172,7 +172,7 @@ export default function HomeView({ bestSellers, onSelectItem, onAddToCart }: Hom
                     rel="noopener noreferrer"
                     className="inline-block px-4 py-2 border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-surface text-[9px] tracking-wider uppercase font-bold transition-all"
                   >
-                    View Timings & Rooms
+                    Locate Hotel on Maps
                   </a>
                 </div>
               </div>

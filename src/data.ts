@@ -2092,6 +2092,21 @@ export const MENU_ITEMS: MenuItem[] = [
     nutritionalInfo: { protein: '6g', carbs: '60g', fat: '13g' }
   },
   {
+    id: 'asian-garlic-rice-egg',
+    name: 'Chilli Garlic Fried Rice (Egg)',
+    description: 'Wok-tossed spicy rice with scrambled eggs, burnt garlic flakes, and fresh red chilies.',
+    price: 325.00,
+    image: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&q=80&w=800',
+    category: 'rice',
+    calories: 440,
+    spiceLevel: 2,
+    prepTime: '12 mins',
+    isVegetarian: false,
+    ingredients: ['Basmati rice', 'Scrambled eggs', 'Fried garlic', 'Red chili paste'],
+    allergens: ['Eggs', 'Soy', 'Wheat'],
+    nutritionalInfo: { protein: '12g', carbs: '56g', fat: '14g' }
+  },
+  {
     id: 'asian-garlic-rice-chicken',
     name: 'Chilli Garlic Fried Rice (Chicken)',
     description: 'Wok-tossed spicy rice with chicken slices, burnt garlic flakes, and fresh red chilies.',
@@ -2105,6 +2120,51 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Basmati rice', 'Chicken slices', 'Fried garlic', 'Red chili paste'],
     allergens: ['Soy', 'Wheat'],
     nutritionalInfo: { protein: '24g', carbs: '58g', fat: '18g' }
+  },
+  {
+    id: 'asian-schezwan-rice-veg',
+    name: 'Schezwan Fried Rice (Veg)',
+    description: 'Spicy and aromatic fried rice wok-tossed with seasonal vegetables and fiery Schezwan sauce.',
+    price: 315.00,
+    image: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&q=80&w=800',
+    category: 'rice',
+    calories: 390,
+    spiceLevel: 2,
+    prepTime: '12 mins',
+    isVegetarian: true,
+    ingredients: ['Basmati rice', 'Shredded cabbage', 'Carrots', 'Schezwan sauce'],
+    allergens: ['Soy', 'Wheat'],
+    nutritionalInfo: { protein: '6g', carbs: '60g', fat: '12g' }
+  },
+  {
+    id: 'asian-schezwan-rice-egg',
+    name: 'Schezwan Fried Rice (Egg)',
+    description: 'Spicy wok-tossed Schezwan fried rice with scrambled eggs, onions, and spring greens.',
+    price: 325.00,
+    image: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&q=80&w=800',
+    category: 'rice',
+    calories: 440,
+    spiceLevel: 2,
+    prepTime: '12 mins',
+    isVegetarian: false,
+    ingredients: ['Basmati rice', 'Scrambled eggs', 'Onions', 'Schezwan sauce'],
+    allergens: ['Eggs', 'Soy', 'Wheat'],
+    nutritionalInfo: { protein: '12g', carbs: '58g', fat: '14g' }
+  },
+  {
+    id: 'asian-schezwan-rice-chicken',
+    name: 'Schezwan Fried Rice (Chicken)',
+    description: 'Fiery fried rice wok-tossed with tender chicken chunks, peppers, and spicy Schezwan sauce.',
+    price: 345.00,
+    image: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&q=80&w=800',
+    category: 'rice',
+    calories: 490,
+    spiceLevel: 3,
+    prepTime: '12 mins',
+    isVegetarian: false,
+    ingredients: ['Basmati rice', 'Chicken chunks', 'Bell peppers', 'Schezwan sauce'],
+    allergens: ['Soy', 'Wheat'],
+    nutritionalInfo: { protein: '22g', carbs: '56g', fat: '16g' }
   },
   {
     id: 'asian-noodles-veg',
@@ -2165,6 +2225,21 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Noodles', 'Burnt garlic', 'Chili paste', 'Scallions'],
     allergens: ['Wheat', 'Soy'],
     nutritionalInfo: { protein: '8g', carbs: '60g', fat: '14g' }
+  },
+  {
+    id: 'asian-noodles-garlic-egg',
+    name: 'Chilli Garlic Noodles (Egg)',
+    description: 'Spicy wok-tossed wheat noodles with scrambled eggs, burnt garlic, and fresh red chilies.',
+    price: 325.00,
+    image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=80&w=800',
+    category: 'rice',
+    calories: 470,
+    spiceLevel: 2,
+    prepTime: '12 mins',
+    isVegetarian: false,
+    ingredients: ['Noodles', 'Scrambled eggs', 'Burnt garlic', 'Chili paste'],
+    allergens: ['Wheat', 'Eggs', 'Soy'],
+    nutritionalInfo: { protein: '14g', carbs: '58g', fat: '16g' }
   },
   {
     id: 'asian-noodles-garlic-chicken',
