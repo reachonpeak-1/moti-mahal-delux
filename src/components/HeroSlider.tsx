@@ -1,7 +1,6 @@
 /**
  * HeroSlider.tsx
- * Cinematic slider reading dynamic slides from Firestore Settings.
- * Falls back to static HERO_SLIDES if settings are not loaded yet or empty.
+ * Cinematic slider using local HERO_SLIDES photos only (no Firebase).
  */
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -9,7 +8,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { HERO_SLIDES as STATIC_SLIDES } from '../heroSlides';
 import type { HeroSlide } from '../types';
-import { useSettings } from '../contexts/SettingsContext';
 
 interface HeroSliderProps {
   onOrderNow: () => void;
@@ -17,7 +15,8 @@ interface HeroSliderProps {
 }
 
 export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps) {
-  const staticSlides = useMemo(
+  // Hero always uses local photos — never fetched from Firebase.
+  const slides: HeroSlide[] = useMemo(
     () =>
       STATIC_SLIDES.map((slide, idx) => ({
         id: slide.id,
@@ -28,17 +27,7 @@ export default function HeroSlider({ onOrderNow, onBookTable }: HeroSliderProps)
       })),
     []
   );
-  const { settings } = useSettings();
-  const [slides, setSlides] = useState<HeroSlide[]>(staticSlides);
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Update slides when restaurant settings arrive, but keep static slides visible on first paint.
-  useEffect(() => {
-    if (settings?.heroSliders?.length) {
-      setSlides([...settings.heroSliders].sort((a, b) => a.sortOrder - b.sortOrder));
-      setCurrentIndex(0);
-    }
-  }, [settings]);
 
   // Autoplay rotation
   useEffect(() => {
